@@ -95,6 +95,7 @@ public class VideoButton : Button
     protected override void OnPointClickVirtual()
     {
         //base.OnPointClickVirtual();
+        GlobalManager.currentExercice = this._exercice;
         SceneManager.LoadScene(this._sceneName);
     }
     protected override void OnPointerEnterVirtual()

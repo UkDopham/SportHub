@@ -41,6 +41,7 @@ public class Movement : MonoBehaviour
     {
         Vector3 moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         Vector3 moveDirectionCamera = this._camera.transform.TransformDirection(moveDirection);
+        moveDirectionCamera.y = 0;
         this._controller.Move(moveDirectionCamera * Time.deltaTime * _playerSpeed);
 
         gameObject.transform.position = moveDirection;

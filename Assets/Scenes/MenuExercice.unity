@@ -1175,7 +1175,7 @@ MonoBehaviour:
   _textFontColorOnClick: {r: 0, g: 1, b: 1, a: 1}
   _backgroundColorOnMouseOver: {r: 0, g: 1, b: 0, a: 1}
   _textFontColorOnMouseOver: {r: 0, g: 1, b: 1, a: 1}
-  _sceneName: SampleScene
+  _sceneName: SampleSceneNam
   _scaleVideoEnter: 2
   _blur: {fileID: 1435623357}
   _exercice: {fileID: 11400000, guid: f9701a0802c09a3479e59ff296093879, type: 2}
@@ -3178,7 +3178,7 @@ MonoBehaviour:
   _textFontColorOnClick: {r: 0, g: 1, b: 1, a: 1}
   _backgroundColorOnMouseOver: {r: 0, g: 1, b: 0, a: 1}
   _textFontColorOnMouseOver: {r: 0, g: 1, b: 1, a: 1}
-  _sceneName: SampleScene
+  _sceneName: SampleSceneNam
   _scaleVideoEnter: 2
   _blur: {fileID: 1435623357}
   _exercice: {fileID: 11400000, guid: 549a8cadeb2d79f4186a7b1a6616ae22, type: 2}
