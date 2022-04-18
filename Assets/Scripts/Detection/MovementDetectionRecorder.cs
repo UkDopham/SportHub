@@ -8,6 +8,8 @@ using UnityEngine;
 public class MovementDetectionRecorder : MonoBehaviour
 {
     [SerializeField]
+    MovementDetectionData movementData;
+    [SerializeField]
     float timeStepRecord = 0.5f;
 
     [SerializeField]
@@ -21,6 +23,12 @@ public class MovementDetectionRecorder : MonoBehaviour
     bool recording = false;
     List<BodyTransform> movementSteps = new List<BodyTransform>();
 
+
+    private void Start()
+    {
+        if (movementData.isLock)
+            this.enabled = false;
+    }
 
     public void StartRecording()
     {
@@ -38,6 +46,18 @@ public class MovementDetectionRecorder : MonoBehaviour
                 movementSteps.Add(new BodyTransform(headPosition.position, leftArmPosition.position, rightArmPosition.position));
                 time = 0;
             }
+
+            if (Input.GetButton("A"))
+            {
+                EndRecording();
+            }
+        }
+        else
+        {
+            if(Input.GetButton("A"))
+            {
+                StartRecording();
+            }
         }
     }
 
@@ -45,5 +65,7 @@ public class MovementDetectionRecorder : MonoBehaviour
     public void EndRecording()
     {
         recording = false;
+        movementData.TimeInterval = timeStepRecord;
+        movementData.Movements = movementSteps;
     }
 }
