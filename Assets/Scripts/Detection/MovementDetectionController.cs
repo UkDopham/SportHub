@@ -68,6 +68,8 @@ public class MovementDetectionController : MonoBehaviour
 
     [Header("Movement Indicator")]
     [SerializeField]
+    TMPro.TextMeshPro textFeedback = null;
+    [SerializeField]
     Transform helperLeftArm = null;
     [SerializeField]
     Transform helperRightArm = null;
@@ -87,6 +89,7 @@ public class MovementDetectionController : MonoBehaviour
     float targetTime = 0f;
 
     float startTimer = 0f;
+    bool cooldownText = true;
 
     private void Start()
     {
@@ -135,21 +138,25 @@ public class MovementDetectionController : MonoBehaviour
             if (DetectStep(movementDistancePrecision, movementSteps[indexStep], playerTransform))
             {
                 // Si on est dans les temps
-                if(targetTime - movementTimePrecision < time && time < targetTime + movementTimePrecision)
+                if (time >= targetTime)
                 {
                     // 2tape suivante
                     NextStep();
+                    DrawText("Parfait");
                 }
-                else
+                else if (time <= targetTime - movementTimePrecision)
                 {
                     // Trop rapide, (arrêter le mouvement ?)
                     //EndMovement();
+                    //DrawText("Trop rapide"); cooldownText = true;
                 }
             }
-            else if (time > targetTime + movementTimePrecision)
+            else if (time > targetTime)
             {
                 // Trop lent, (arrêter le mouvement ?)
                 //EndMovement();
+                NextStep(); 
+                DrawText("Trop lent");
             }
         }
         else
@@ -166,12 +173,19 @@ public class MovementDetectionController : MonoBehaviour
         }
     }
 
+    private void DrawText(string text)
+    {
+        if (cooldownText)
+            return;
+        textFeedback.text = text;
+    }
+
     private void NextStep()
     {
         indexStep += 1;
         startTimer = time;
         targetTime = time + timeStep;
-
+        cooldownText = false;
         if(indexStep >= movementSteps.Count)
         {
             EndMovement();

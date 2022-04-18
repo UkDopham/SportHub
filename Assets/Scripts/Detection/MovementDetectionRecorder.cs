@@ -33,6 +33,7 @@ public class MovementDetectionRecorder : MonoBehaviour
     public void StartRecording()
     {
         recording = true;
+        Debug.Log("Allo");
     }
 
     // Update is called once per frame
@@ -47,14 +48,14 @@ public class MovementDetectionRecorder : MonoBehaviour
                 time = 0;
             }
 
-            if (Input.GetButton("A"))
+            if (Input.GetButtonDown("Jump"))
             {
                 EndRecording();
             }
         }
         else
         {
-            if(Input.GetButton("A"))
+            if (Input.GetButtonDown("Jump"))
             {
                 StartRecording();
             }
@@ -67,5 +68,6 @@ public class MovementDetectionRecorder : MonoBehaviour
         recording = false;
         movementData.TimeInterval = timeStepRecord;
         movementData.Movements = movementSteps;
+        Debug.Log("Allo");
     }
 }
