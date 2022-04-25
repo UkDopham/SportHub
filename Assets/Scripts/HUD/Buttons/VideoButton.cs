@@ -20,8 +20,10 @@ public class VideoButton : Button
 
     private List<CanvasGroup> _stars = new List<CanvasGroup>();  
     private RawImage _video;
+    private Image _back;
     private VideoPlayer _videoPlayer;
     private Vector2 _baseScale;
+    private Vector2 _baseScaleBack;
     private TextMeshProUGUI _title;
     private TextMeshProUGUI _description;
     private CanvasGroup _metrics;
@@ -51,7 +53,9 @@ public class VideoButton : Button
         base.Initialization();
         this._video = GetComponentInChildren<RawImage>();
         this._videoPlayer = GetComponentInChildren<VideoPlayer>();
+        this._back = GetComponentsInChildren<Image>().FirstOrDefault(x => x.name == "Back");
         this._baseScale = this._video.rectTransform.sizeDelta;
+        this._baseScaleBack = this._back.rectTransform.sizeDelta;
         this._canvas = GetComponents<CanvasGroup>().FirstOrDefault(x => x.name.Contains("Video button"));
         this._metrics = GetComponentsInChildren<CanvasGroup>().FirstOrDefault(x => x.name == "Metrics");
         this._title = GetComponentsInChildren<TextMeshProUGUI>().FirstOrDefault(x => x.name == "Title");
@@ -108,6 +112,7 @@ public class VideoButton : Button
     protected override void OnPointerExitVirtual()
     {
         this._video.rectTransform.sizeDelta = this._baseScale;
+        this._back.rectTransform.sizeDelta = this._baseScaleBack;
         this._videoPlayer.Stop();
         this._blur.alpha = 0f;
         this._metrics.alpha = 0f;
@@ -116,5 +121,6 @@ public class VideoButton : Button
     private void Scale(float scale)
     {
         this._video.rectTransform.sizeDelta = this._video.rectTransform.sizeDelta * scale;
+        this._back.rectTransform.sizeDelta = this._back.rectTransform.sizeDelta * scale;
     }
 }
