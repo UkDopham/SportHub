@@ -74,10 +74,13 @@ public class MovementDetectionController : MonoBehaviour
     [SerializeField]
     TMPro.TextMeshPro textFeedback = null;
     [SerializeField]
+    TMPro.TextMeshPro textSeries = null;
+    [SerializeField]
     Transform helperLeftArm = null;
     [SerializeField]
     Transform helperRightArm = null;
 
+    [Header("Feedbacks")]
     [SerializeField]
     private TextMeshProUGUI _message;
     [SerializeField]
@@ -101,6 +104,7 @@ public class MovementDetectionController : MonoBehaviour
     MovementDetectionData movementData;
     float timeStep = 0.5f; // Le temps entre chaque étape du mouvement
     List<BodyTransform> movementSteps = new List<BodyTransform>();
+    int[] exerciceScore = new int[3];
 
 
     BodyTransform playerTransform;
@@ -108,6 +112,7 @@ public class MovementDetectionController : MonoBehaviour
 
     bool movementOngoing = false;
     int indexStep = 0;
+    int repetition = 0;
     float time = 0;
     float targetTime = 0f;
 
@@ -123,7 +128,7 @@ public class MovementDetectionController : MonoBehaviour
         movementData = debugExercice;
 #endif
         InitializeMovement(movementData.Movements, movementData.TimeInterval);
-
+        StartMovement();
         //Finished("Bonjour la france", Color.red, 5);
     }
 
@@ -134,6 +139,7 @@ public class MovementDetectionController : MonoBehaviour
         time = 0f;
 
         DrawMovementHelper(steps[0], steps[0], 0);
+        textFeedback.text = "Maintenez la position pour commencer.";
     }
 
     public void StartMovement()
@@ -144,7 +150,14 @@ public class MovementDetectionController : MonoBehaviour
         startTimer = 0;
         targetTime = timeStep;
 
-        Debug.Log("Movement START");
+        exerciceScore = new int[3];
+        for (int i = 0; i < exerciceScore.Length; i++)
+        {
+            exerciceScore[i] = 0;
+        }
+
+        textFeedback.text = "C'est parti !";
+        textSeries.text = repetition + " / " + movementData.Repetition;
     }
 
     // Update is called once per frame
@@ -159,8 +172,13 @@ public class MovementDetectionController : MonoBehaviour
             time += Time.deltaTime;
             DrawMovementHelper(GetPreviousStepPosition(indexStep), movementSteps[indexStep], (time - startTimer) / (targetTime - startTimer));
 
+            if (time >= targetTime)
+            {
+                // 2tape suivante
+                NextStep();
+            }
             // On check si la position est bonne
-            if (DetectStep(movementDistancePrecision, movementSteps[indexStep], playerTransform))
+            /*if (DetectStep(movementDistancePrecision, movementSteps[indexStep], playerTransform))
             {
                 // Si on est dans les temps
                 if (time >= targetTime)
@@ -182,7 +200,7 @@ public class MovementDetectionController : MonoBehaviour
                 //EndMovement();
                 NextStep(); 
                 DrawText("Trop lent");
-            }
+            }*/
         }
         else
         {
@@ -194,24 +212,47 @@ public class MovementDetectionController : MonoBehaviour
                 {
                     StartMovement();
                 }
+                else if (startTimer > 2) // C'est dégueulasse mais c'est pas grave
+                {
+                    textFeedback.text = "1";
+                }
+                else if (startTimer > 1)
+                {
+                    textFeedback.text = "2";
+                }
+                else if (startTimer > 0)
+                {
+                    textFeedback.text = "3";
+                }
             }
         }
     }
 
-    private void DrawText(string text)
+    /*private void DrawText(string text)
     {
         if (cooldownText)
             return;
         textFeedback.text = text;
-    }
+    }*/
 
     private void NextStep()
     {
+        int result = AddScore(movementDistancePrecision, movementSteps[indexStep], playerTransform);
+        if (result == 0)
+            textFeedback.text = "Trop lent";
+        else if (result == 1)
+            textFeedback.text = "Approximatif";
+        else if (result == 2)
+            textFeedback.text = "Bien";
+        else if (result == 3)
+            textFeedback.text = "Parfait";
+
         indexStep += 1;
         startTimer = time;
         targetTime = time + timeStep;
         cooldownText = false;
-        if(indexStep >= movementSteps.Count)
+
+        if (indexStep >= movementSteps.Count)
         {
             EndMovement();
         }
@@ -220,6 +261,23 @@ public class MovementDetectionController : MonoBehaviour
     public void EndMovement()
     {
         movementOngoing = false;
+        repetition += 1;
+
+        textSeries.text = repetition + " / " + movementData.Repetition;
+
+        if (repetition >= movementData.Repetition)
+        {
+            float percentage = movementData.Movements.Count * movementData.Repetition;
+
+            Finished("Précision de la tête : " + (((float) exerciceScore[0] / percentage) * 100) + " %\n" +
+                "Précision du bras gauche : " + (((float)exerciceScore[1] / percentage) * 100) + " %\n" +
+                "Précision du bras droit : " + (((float)exerciceScore[2] / percentage) * 100) + " %\n",
+                Color.yellow, 10);
+        }
+        else
+        {
+            StartMovement();
+        }
     }
 
 
@@ -245,6 +303,19 @@ public class MovementDetectionController : MonoBehaviour
         playerHead.position = movementSteps[indexStep].HeadPosition;
     }
 
+    private int AddScore(float distancePrecision, BodyTransform stepPosition, BodyTransform playerTransform)
+    {
+        int score = 0;
+        for (int i = 0; i<stepPosition.Count; i++)
+        {
+            if (CheckDetection(distancePrecision, stepPosition[i], playerTransform[i]))
+            {
+                score += 1;
+                exerciceScore[i] += 1;
+            }
+        }
+        return score;
+    }
 
     public bool DetectStep(float distancePrecision, BodyTransform stepPosition, BodyTransform playerTransform)
     {
