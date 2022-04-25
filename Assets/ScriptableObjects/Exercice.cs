@@ -15,6 +15,9 @@ public class Exercice : ScriptableObject
     [SerializeField]
     [TextArea]
     private string _description;
+    
+    [SerializeField]
+    private MovementDetectionData _movementData;
 
     public string Name
     {
@@ -42,6 +45,13 @@ public class Exercice : ScriptableObject
         get
         {
             return this._description;
+        }
+    }
+    public MovementDetectionData MovementData
+    {
+        get
+        {
+            return this._movementData;
         }
     }
 }

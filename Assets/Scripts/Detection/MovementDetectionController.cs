@@ -122,11 +122,13 @@ public class MovementDetectionController : MonoBehaviour
     private void Start()
     {
         playerTransform = new BodyTransform();
-        // movementData = GlobalManager.currentExercice.
+
+        movementData = GlobalManager.currentExercice.MovementData;
 
 #if UNITY_EDITOR
         movementData = debugExercice;
 #endif
+
         InitializeMovement(movementData.Movements, movementData.TimeInterval);
         StartMovement();
         //Finished("Bonjour la france", Color.red, 5);

@@ -18,3 +18,4 @@ MonoBehaviour:
   _description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam faucibus
     mi orci, quis varius nulla mattis quis. Fusce eget sagittis mi. Vestibulum finibus
     eleifend nulla nec faucibus. '
+  _movementData: {fileID: 11400000, guid: dd130bf0636f70c46ae3a53606893e7c, type: 2}
