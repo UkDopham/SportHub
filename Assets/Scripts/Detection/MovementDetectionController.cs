@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 [System.Serializable]
 public struct BodyTransform
@@ -74,6 +78,25 @@ public class MovementDetectionController : MonoBehaviour
     [SerializeField]
     Transform helperRightArm = null;
 
+    [SerializeField]
+    private TextMeshProUGUI _message;
+    [SerializeField]
+    private CanvasGroup _back;
+    [SerializeField]
+    private Image _backImage;
+    [SerializeField]
+    private AudioSource _audioSourceSound;
+    [SerializeField]
+    private AudioSource _audioSourceMusic;
+    [SerializeField]
+    private AudioClip _key;
+    [SerializeField]
+    private AudioClip _coin;
+    [SerializeField]
+    private List<CanvasGroup> _stars = new List<CanvasGroup>();
+    [SerializeField]
+    private CanvasGroup _messageCG;
+
 
     MovementDetectionData movementData;
     float timeStep = 0.5f; // Le temps entre chaque étape du mouvement
@@ -100,6 +123,8 @@ public class MovementDetectionController : MonoBehaviour
         movementData = debugExercice;
 #endif
         InitializeMovement(movementData.Movements, movementData.TimeInterval);
+
+        //Finished("Bonjour la france", Color.red, 5);
     }
 
     public void InitializeMovement(List<BodyTransform> steps, float intervalStep)
@@ -235,5 +260,61 @@ public class MovementDetectionController : MonoBehaviour
     {
         float distance = (position - playerPos).magnitude;
         return (distance < precision);
+    }
+
+    /// <summary>
+    /// Finishing an exercice 
+    /// </summary>
+    /// <param name="message">Message to show</param>
+    /// <param name="color">Color of the background</param>
+    /// <param name="delay">Delay before switching to the menu scene</param>
+    private void Finished(string message, Color color, float delay)
+    {
+        this._stars.ForEach(x => x.alpha = 0);
+        this._messageCG.alpha = 1;
+        this._audioSourceMusic.Stop();
+        this._audioSourceSound.PlayOneShot(this._coin);
+        this._back.alpha = 0.2f;
+        this._backImage.color = color;
+
+        StartCoroutine(LoadScene(delay, message));
+    }
+
+
+    /// <summary>
+    /// Loading a scene with a delay
+    /// </summary>
+    /// <param name="delay">Delay before loading the new scene</param>
+    /// <returns></returns>
+    private IEnumerator LoadScene(float delay, string message)
+    {
+        this._message.text = string.Empty;
+        for (int i = 0; 
+            i < message.Length; 
+            i ++)
+        {
+            this._message.text += message[i];
+            this._audioSourceSound.PlayOneShot(this._key);
+            yield return new WaitForSeconds(.15f);
+        }
+
+
+        if(GlobalManager.currentExercice != null)
+        {
+            for (int i = 0;
+                i < GlobalManager.currentExercice.Difficulty;
+                i++)
+            {
+                this._stars[i].alpha = 1;
+                this._audioSourceSound.PlayOneShot(this._coin);
+                yield return new WaitForSeconds(.25f);
+            }
+        }
+
+        yield return new WaitForSeconds(delay); 
+
+        SceneManager.LoadScene("MenuExercice");
+
+        yield return null;
     }
 }
